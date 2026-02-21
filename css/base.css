@@ -114,7 +114,7 @@ body {
 }
 
 .mode-logo-card img {
-    width: 74%;
+    width: 100%;
     height: auto;
 }
 
@@ -147,7 +147,7 @@ body {
 }
 
 .mode-btn {
-    min-width: 100%;
+    max-width: 70%;
     height: clamp(64px, 5vw, 76px);
     border-radius: 999px;
     border: 4px solid #b9b3e9;

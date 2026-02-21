@@ -120,6 +120,20 @@ $(function() {
         modeGateEl.addClass('hidden');
     }
     
+    function showModeGate() {
+        modeGateEl.removeClass('hidden');
+        hideShareToast();
+        closeNetworking();
+        gameMode = 'gate';
+        myColor = 'w';
+        player = 'w';
+        ensureEngineWorker();
+        $('#hintBtn').prop('disabled', false).removeClass('hide');
+        $('input[name="engineMenu"]').prop('disabled', false);
+        $('body').removeClass('waiting-mode');
+        updateStatus();
+    }
+    
     function showShareToast(link) {
         shareToastLinkEl.text(link);
         shareToastStatusEl.text('');
@@ -990,6 +1004,12 @@ $(function() {
     if (joinRoom) {
         startGuestMode(joinRoom);
     }
+    
+    $('.logo').css('cursor', 'pointer').on('click', function() {
+        if (gameMode !== 'gate') {
+            showModeGate();
+        }
+    });
 
     updateStatus();
 });
