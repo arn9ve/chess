@@ -223,6 +223,168 @@ body {
     max-width: min(40vw, 420px);
 }
 
+.share-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    z-index: 3000;
+    transform: translateY(150%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.share-toast.visible {
+    transform: translateY(0);
+}
+
+.share-toast.hide {
+    pointer-events: none;
+}
+
+.share-toast-content {
+    background: #232323;
+    border: 1px solid #b9b3e9;
+    border-radius: 999px;
+    padding: 16px;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.share-toast-link-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.share-toast-link {
+    flex: 1;
+    font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+    font-size: 0.85rem;
+    color: #b9b3e9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 10px 16px;
+    background: rgba(185, 179, 233, 0.08);
+    border: 2px solid rgba(185, 179, 233, 0.25);
+    border-radius: 999px;
+}
+
+.share-toast-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: #b9b3e9;
+    border: 2px solid #b9b3e9;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-family: "Proxima Nova", "Inter", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.share-toast-back:hover {
+    background: rgba(185, 179, 233, 0.12);
+}
+
+.share-toast-copy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #b9b3e9;
+    color: #232323;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-family: "Proxima Nova", "Inter", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.share-toast-copy:hover {
+    background: #c5bef2;
+}
+
+.share-toast-copy:active {
+    transform: scale(0.98);
+}
+
+.share-toast-copy.copied {
+    background: #4ade80;
+}
+
+.share-toast-status {
+    text-align: center;
+    padding: 10px 20px 0;
+    font-family: "Inter", sans-serif;
+    font-size: 0.8rem;
+    color: rgba(185, 179, 233, 0.6);
+}
+
+.waiting-mode .header .status,
+.waiting-mode .header .btns {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.waiting-mode .left-side,
+.waiting-mode .right-side {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.waiting-mode .header .logo {
+    animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.waiting-mode .share-toast-status::after {
+    content: '';
+    animation: waitingDots 1.5s ease-in-out infinite;
+}
+
+@keyframes waitingDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+.share-toast-back,
+.share-toast-copy {
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.share-toast-back:hover,
+.share-toast-copy:hover {
+    transform: scale(1.05);
+}
+
+.share-toast-back:active,
+.share-toast-copy:active {
+    transform: scale(0.95);
+}
+
+.share-toast-link {
+    transition: all 0.3s ease;
+}
+
+.share-toast-link:hover {
+    background: rgba(185, 179, 233, 0.15);
+}
+
 .mode-host-panel {
     width: 100%;
     border: 2px solid rgba(185, 179, 233, 0.45);
@@ -881,18 +1043,6 @@ main {
         font-size: clamp(1.6rem, 6.4vw, 2.3rem);
     }
 
-    .mode-host-input-row {
-        grid-template-columns: 1fr;
-    }
-
-    .mode-mini-btn {
-        width: 100%;
-    }
-
-    .mode-host-actions {
-        grid-template-columns: 1fr;
-    }
-
     .status {
         display: none !important
     }
@@ -945,6 +1095,34 @@ main {
       
         justify-content: center;
 
+    }
+    
+    .share-toast {
+        bottom: 16px;
+        left: 12px;
+        right: 12px;
+    }
+    
+    .share-toast-content {
+        padding: 12px 14px;
+    }
+    
+    .share-toast-link-box {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .share-toast-link {
+        width: 100%;
+        text-align: center;
+        white-space: normal;
+        word-break: break-all;
+    }
+    
+    .share-toast-back,
+    .share-toast-copy {
+        flex: 1;
+        justify-content: center;
     }
 
 

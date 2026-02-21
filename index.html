@@ -68,28 +68,26 @@
                 </button>
                 <div id="joinInfo" class="mode-join-info hide"></div>
             </div>
-            <div id="modeHostPanel" class="mode-host-panel hide" aria-live="polite">
-                <p id="hostStatusText" class="mode-host-status">Creating room...</p>
-                <label class="mode-host-field">
-                    <span>Room Code</span>
-                    <div class="mode-host-input-row">
-                        <input id="hostCodeInput" type="text" readonly value="">
-                        <button id="copyHostCodeBtn" class="mode-mini-btn" type="button">Copy</button>
-                    </div>
-                </label>
-                <label class="mode-host-field">
-                    <span>Invite Link</span>
-                    <div class="mode-host-input-row">
-                        <input id="hostLinkInput" type="text" readonly value="">
-                        <button id="copyHostLinkBtn" class="mode-mini-btn" type="button">Copy</button>
-                    </div>
-                </label>
-                <div class="mode-host-actions">
-                    <button id="hostBackBtn" class="mode-btn mode-btn-ghost mode-btn-small" type="button">Back</button>
-                    <button id="enterHostedGameBtn" class="mode-btn mode-btn-primary mode-btn-small" type="button">Enter Game</button>
-                </div>
+        </div>
+    </div>
+    
+    <div id="shareToast" class="share-toast hide">
+        <div class="share-toast-content">
+            <div class="share-toast-link-box">
+                <button id="shareToastBackBtn" class="share-toast-back">
+                    <span>Play Offline</span>
+                </button>
+                <span class="share-toast-link" id="shareToastLink"></span>
+                <button id="shareToastCopyBtn" class="share-toast-copy">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="shareToastCopyText">Copy Link</span>
+                </button>
             </div>
         </div>
+        <div class="share-toast-status" id="shareToastStatus"></div>
     </div>
     <main>
 

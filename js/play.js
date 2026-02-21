@@ -59,6 +59,8 @@ $(function() {
     var peerConn = null;
     var hostRoomCode = '';
     var hostInviteLink = '';
+    var waitingRotationId = null;
+    var waitingRotationAngle = 0;
 
     var modeGateEl = $('#modeGate');
     var modeActionButtonsEl = $('#modeActionButtons');
@@ -68,6 +70,11 @@ $(function() {
     var hostLinkInputEl = $('#hostLinkInput');
     var copyHostCodeBtnEl = $('#copyHostCodeBtn');
     var copyHostLinkBtnEl = $('#copyHostLinkBtn');
+    var shareToastEl = $('#shareToast');
+    var shareToastLinkEl = $('#shareToastLink');
+    var shareToastStatusEl = $('#shareToastStatus');
+    var shareToastCopyBtnEl = $('#shareToastCopyBtn');
+    var shareToastCopyTextEl = $('#shareToastCopyText');
 
     // true for when the engine is processing; ignore_mouse_events is always true if this is set (also during animations)
     var engineRunning = false;
@@ -112,9 +119,37 @@ $(function() {
     function hideModeGate() {
         modeGateEl.addClass('hidden');
     }
+    
+    function showShareToast(link) {
+        shareToastLinkEl.text(link);
+        shareToastStatusEl.text('');
+        shareToastEl.removeClass('hide').addClass('visible');
+        $('body').addClass('waiting-mode');
+    }
+    
+    function hideShareToast() {
+        shareToastEl.removeClass('visible');
+        $('body').removeClass('waiting-mode');
+        setTimeout(function() {
+            shareToastEl.addClass('hide');
+        }, 500);
+    }
+    
+    function updateShareToastStatus(text) {
+        shareToastStatusEl.text(text);
+    }
+    
+    function flashCopyButton() {
+        shareToastCopyBtnEl.addClass('copied');
+        shareToastCopyTextEl.text('Copied!');
+        setTimeout(function() {
+            shareToastCopyBtnEl.removeClass('copied');
+            shareToastCopyTextEl.text('Copy Link');
+        }, 1500);
+    }
 
     function showJoinInfo(text) {
-        $('#joinInfo').removeClass('hide').text(text);
+        $('#joinInfo').removeClass('hide').html('<strong>Joining...</strong><br>' + text);
     }
 
     function setHostStatus(text) {
@@ -235,7 +270,12 @@ $(function() {
                     fen: game.fen(),
                     color: 'b'
                 });
-                setHostStatus('Friend connected. Press "Enter Game" to start.');
+                updateShareToastStatus('Friend connected! Game starting...');
+                setTimeout(function() {
+                    hideShareToast();
+                }, 3000);
+            } else {
+                hideShareToast();
             }
             updateStatus();
         });
@@ -261,7 +301,8 @@ $(function() {
         });
         peerConn.on('close', function() {
             if (isHost()) {
-                setHostStatus('Friend disconnected. Share the code again to reconnect.');
+                showShareToast(hostInviteLink);
+                updateShareToastStatus('Friend disconnected. Share the link again to reconnect.');
             } else {
                 swal("Connection closed", "Your friend disconnected.", "info");
             }
@@ -294,16 +335,14 @@ $(function() {
         player = 'w';
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
-        showHostPanel();
-        setHostStatus('Creating room...');
-        hostCodeInputEl.val('');
-        hostLinkInputEl.val('');
+        hideModeGate();
         updateStatus();
 
         peerNode = new Peer();
         peerNode.on('open', function(id) {
             buildHostInvite(id);
-            setHostStatus('Share this code or invite link with your friend.');
+            showShareToast(hostInviteLink);
+            updateShareToastStatus('Share the link with a friend to start playing');
         });
         peerNode.on('connection', function(conn) {
             if (peerConn && peerConn.open) {
@@ -313,7 +352,7 @@ $(function() {
             bindPeerConnection(conn);
         });
         peerNode.on('error', function() {
-            setHostStatus('Unable to create room. Try again.');
+            updateShareToastStatus('Unable to create room. Please try again.');
         });
     }
 
@@ -329,7 +368,8 @@ $(function() {
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
         hideModeGate();
-        showJoinInfo("Joining host room...");
+        showShareToast(window.location.href);
+        updateShareToastStatus('Connecting to host...');
         updateStatus();
 
         peerNode = new Peer();
@@ -338,7 +378,10 @@ $(function() {
             bindPeerConnection(conn);
         });
         peerNode.on('error', function() {
-            swal("Join error", "Unable to connect to host link.", "error");
+            updateShareToastStatus('Unable to connect. Check the link and try again.');
+            setTimeout(function() {
+                swal("Join error", "Unable to connect to host link.", "error");
+            }, 1000);
         });
     }
 
@@ -922,20 +965,25 @@ $(function() {
         copyText(hostInviteLink);
         flashCopiedButton(copyHostLinkBtnEl);
     });
-
-    $('#hostBackBtn').on('click', function() {
+    
+    $('#shareToastCopyBtn').on('click', function() {
+        if (!hostInviteLink) {
+            return;
+        }
+        copyText(hostInviteLink);
+        flashCopyButton();
+    });
+    
+    $('#shareToastBackBtn').on('click', function() {
         closeNetworking();
-        showModeActions();
-        setHostStatus('Creating room...');
-        gameMode = 'gate';
+        hideShareToast();
+        gameMode = 'offline';
         myColor = 'w';
         player = 'w';
         ensureEngineWorker();
+        $('#hintBtn').prop('disabled', false).removeClass('hide');
+        $('input[name="engineMenu"]').prop('disabled', false);
         updateStatus();
-    });
-
-    $('#enterHostedGameBtn').on('click', function() {
-        hideModeGate();
     });
 
     var joinRoom = new URLSearchParams(window.location.search).get('join');
