@@ -938,13 +938,6 @@ $(function() {
             debugLog("GUI: ucinewgame");
             engine.postMessage('ucinewgame');
             updateScoreGauge(0); // they each act a little differently
-            if (currentLevel() === 'easy') {
-                swal('Using easy mode: tiny p4wn + fast think time + frequent random mistakes.');
-            } else if (currentLevel() === 'medium') {
-                swal('Using medium mode: p4wn with fewer handicaps.');
-            } else if (jsURL.match(/lozza/)) {
-                swal('Using Lozza engine by Colin Jerkins, estimated rating 2340.')
-            }
         }
     });
 

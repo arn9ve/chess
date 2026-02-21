@@ -1305,8 +1305,12 @@
             }
 
             function pickingRayCaster(mouseX, mouseY) {
-                var vector = new THREE.Vector3((mouseX / RENDERER.domElement.width) * 2 - 1,
-                    1 - (mouseY / RENDERER.domElement.height) * 2,
+                // mouseX/mouseY are CSS pixels (from getBoundingClientRect), so use
+                // clientWidth/clientHeight here to keep raycast coordinates aligned.
+                var viewportWidth = RENDERER.domElement.clientWidth || RENDERER.domElement.width;
+                var viewportHeight = RENDERER.domElement.clientHeight || RENDERER.domElement.height;
+                var vector = new THREE.Vector3((mouseX / viewportWidth) * 2 - 1,
+                    1 - (mouseY / viewportHeight) * 2,
                     -0.5);
                 vector.unproject(CAMERA);
                 return new THREE.Raycaster(CAMERA.position,
