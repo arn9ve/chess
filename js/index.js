@@ -8,8 +8,8 @@ const menuWrap = document.querySelector('.menu-wrap');
 // menu items
 const menuItems = menuWrap.querySelectorAll('.menu__item');
 
-// open menu button
-const openMenuCtrl = document.querySelector('button.button-menu');
+// open menu trigger (ChessPiece card)
+const openMenuCtrl = document.querySelector('#chessPieceInfoBtn');
 
 // close menu button
 const closeMenuCtrl = menuWrap.querySelector('.button-close');
@@ -144,7 +144,17 @@ const closeMenu = ()  => {
 }
 
 
-// click on menu button
-openMenuCtrl.addEventListener('click', openMenu);
+// click on menu trigger
+if (openMenuCtrl) {
+    openMenuCtrl.addEventListener('click', openMenu);
+    openMenuCtrl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            openMenu();
+        }
+    });
+}
 // click on close menu button
-closeMenuCtrl.addEventListener('click', closeMenu);
+if (closeMenuCtrl) {
+    closeMenuCtrl.addEventListener('click', closeMenu);
+}

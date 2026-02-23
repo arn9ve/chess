@@ -42,29 +42,30 @@
 
 <body class="">
     <div id="modeGate" class="mode-gate">
-        <div class="mode-left">
-            <div class="mode-logo-card">
-                <img src="assets/img/logo-menu.png" alt="Hidea Chess logo" />
+        <div class="mode-shell">
+            <div class="mode-left">
+                <h1 class="mode-title">Hidea's Chess</h1>
+                <div class="mode-logo-card">
+                    <img src="assets/img/menu-chess-figma.png" alt="Hidea Chess artwork" />
+                </div>
+                <div class="mode-footer">
+                    <span>&copy;Arnove</span>
+                    <span>2022</span>
+                </div>
             </div>
-            <h1 class="mode-title">Hidea's <strong>Chess</strong></h1>
-        </div>
-        <div class="mode-right">
-            <div id="modeActionButtons" class="mode-actions-list">
+            <div class="mode-right" id="modeActionButtons">
                 <button id="playOfflineBtn" class="mode-btn mode-btn-primary">
                     <span class="mode-btn-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22.0001C6.477 22.0001 2 17.5231 2 12.0001C2 6.47706 6.477 2.00006 12 2.00006C17.523 2.00006 22 6.47706 22 12.0001C22 17.5231 17.523 22.0001 12 22.0001ZM10.622 8.41506C10.5618 8.37491 10.4919 8.35183 10.4196 8.34828C10.3473 8.34473 10.2755 8.36085 10.2116 8.39492C10.1478 8.42899 10.0944 8.47973 10.0572 8.54174C10.0199 8.60375 10.0001 8.67471 10 8.74706V15.2531C10.0001 15.3254 10.0199 15.3964 10.0572 15.4584C10.0944 15.5204 10.1478 15.5711 10.2116 15.6052C10.2755 15.6393 10.3473 15.6554 10.4196 15.6518C10.4919 15.6483 10.5618 15.6252 10.622 15.5851L15.501 12.3331C15.5559 12.2965 15.6009 12.247 15.632 12.1889C15.6631 12.1309 15.6794 12.066 15.6794 12.0001C15.6794 11.9342 15.6631 11.8693 15.632 11.8112C15.6009 11.7531 15.5559 11.7036 15.501 11.6671L10.622 8.41506Z" fill="#232323"/>
-                        </svg>
+                        <img src="assets/img/menu-person.svg" alt="" />
                     </span>
-                    <span>Play Offline</span>
+                    <span>Solo</span>
                 </button>
                 <button id="hostGameBtn" class="mode-btn mode-btn-ghost">
-                    <span class="mode-btn-icon" aria-hidden="true">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.7187 15.1875C16.8631 15.1872 16.0414 15.5223 15.4298 16.1208L9.46874 12.7692C9.59123 12.2637 9.59123 11.7363 9.46874 11.2308L15.428 7.87923C15.9847 8.42076 16.716 8.74646 17.4909 8.79802C18.2659 8.84957 19.0339 8.62362 19.6574 8.16061C20.281 7.69761 20.7194 7.02777 20.8941 6.27103C21.0689 5.51429 20.9686 4.72006 20.6112 4.03051C20.2538 3.34097 19.6627 2.80114 18.9436 2.50766C18.2245 2.21419 17.4245 2.18624 16.6867 2.42881C15.9489 2.67139 15.3215 3.16865 14.9169 3.83157C14.5122 4.49449 14.3567 5.27979 14.4783 6.04689L8.37843 9.47814C7.8993 9.07895 7.31634 8.82456 6.69784 8.74478C6.07933 8.66501 5.4509 8.76314 4.88617 9.02768C4.32143 9.29222 3.84377 9.71222 3.50916 10.2385C3.17454 10.7647 2.99683 11.3754 2.99683 11.9991C2.99683 12.6227 3.17454 13.2334 3.50916 13.7597C3.84377 14.2859 4.32143 14.7059 4.88617 14.9705C5.4509 15.235 6.07933 15.3331 6.69784 15.2534C7.31634 15.1736 7.8993 14.9192 8.37843 14.52L14.4783 17.9531C14.3728 18.6158 14.4731 19.2949 14.7656 19.8989C15.058 20.5028 15.5286 21.0026 16.1139 21.3308C16.6992 21.659 17.3711 21.7998 18.0389 21.7344C18.7067 21.6689 19.3385 21.4002 19.8489 20.9646C20.3593 20.529 20.7239 19.9473 20.8935 19.2981C21.0631 18.6488 21.0295 17.9632 20.7974 17.3336C20.5653 16.704 20.1457 16.1607 19.5952 15.777C19.0447 15.3932 18.3898 15.1875 17.7187 15.1875Z" fill="#B9B3E9"/>
-                        </svg>
+                    <span class="mode-btn-icon mode-btn-icon-group" aria-hidden="true">
+                        <img src="assets/img/menu-person-a.svg" alt="" />
+                        <img src="assets/img/menu-person-b.svg" alt="" />
                     </span>
-                    <span>Game Host</span>
+                    <span>Multiplayer</span>
                 </button>
                 <div id="joinInfo" class="mode-join-info hide"></div>
             </div>
@@ -97,51 +98,96 @@
 
 
         <div class="content">
-
-
             <div class="header">
-
-                <img class="logo" width="180px" src="assets/img/Logo.png" />
-                <div class="status"> <span></span> <img width="16px" height="16px" src="assets/img/star.png" /> <span id="status"></span></div>
-
-                <div class="btns">
-                    <button class="unbutton button-menu setting-btn" aria-label="Open menu"><img width="20px" height="20px" src="assets/img/setting.png" /></button>
-                    <button class="unbotton btn hide"> Shop <img width="20px" height="20px" src="assets/img/shop.png" /></button>
+                <div class="game-logo-card">
+                    <img class="logo" src="assets/img/menu-chess-figma.png" alt="Hidea Chess logo" />
                 </div>
 
+                <div class="game-status-stack">
+                    <div class="status">
+                        <span id="status">White Turn</span>
+                    </div>
+                    <div class="game-mode-card">
+                        <div class="game-mode-item" id="lastMoveOne">
+                            <img id="lastMoveOneIcon" src="img/chesspieces/alpha/wP.png" alt="" />
+                            <span id="lastMoveOneText">--</span>
+                        </div>
+                        <div class="game-mode-item" id="lastMoveTwo">
+                            <img id="lastMoveTwoIcon" src="img/chesspieces/alpha/bP.png" alt="" />
+                            <span id="lastMoveTwoText">--</span>
+                        </div>
+                    </div>
+                </div>
 
+                <div id="chessPieceInfoBtn" class="game-piece-card" role="button" tabindex="0" aria-label="Open menu">
+                    <div class="game-piece-icons">
+                        <div class="game-piece-icon chesspiece-queen">
+                            <img src="assets/img/chesspiece-queen-front.png" alt="" />
+                        </div>
+                        <div class="game-piece-icon chesspiece-knight">
+                            <img src="assets/img/chesspiece-knight-front.png" alt="" />
+                        </div>
+                    </div>
+                    <div class="game-piece-text">
+                        <span>ChessPiece</span>
+                        <img src="assets/img/chesspiece-arrow.svg" alt="" />
+                    </div>
+                </div>
             </div>
 
             <div id="board">
                 <h1 class="vertical-align">✦ Loading ✦</h1>
             </div>
 
-
-
             <div class="left-side">
-
-                <div id="turns"></div>
-
-                <div>
-                    <div id="pgnBox">
-                        <p style=" display: flex; gap:4px; justify-content:flex-start; align-items:center; ">Last Moves <img width="24px" src="assets/img/arrow.png"></p>
-                        <div id="pgn"></div>
+                <div class="game-action-row">
+                    <div class="game-action-card game-action-static">
+                        <img src="assets/img/game-person.svg" alt="" />
+                        <span>Solo</span>
                     </div>
-
+                    <button class="unbutton game-action-card hint-btn" id="hintBtn">
+                        <img src="assets/img/game-lightbulb.svg" alt="" />
+                        <span>Hint</span>
+                    </button>
                 </div>
 
+                <div id="turns" class="hide"></div>
+                <div id="pgnBox" class="hide">
+                    <p style=" display: flex; gap:4px; justify-content:flex-start; align-items:center; ">Last Moves <img width="24px" src="assets/img/arrow.png"></p>
+                    <div id="pgn"></div>
+                </div>
             </div>
 
             <div class="right-side">
-                <div class="btns">
-                    <button id="resetBtn" class="unbutton reset-btn btn">
-                        <img width="24px" src="assets/img/play.png" /> Reset
+                <div id="primaryActionRow" class="game-action-row">
+                    <button id="resetBtn" class="unbutton game-action-card reset-btn">
+                        <img src="assets/img/game-repeat.svg" alt="" />
+                        <span>Restart</span>
                     </button>
-                    <button class="unbutton btn hint-btn" id="hintBtn"> <img height="24px" width="24px" src="assets/img/hint.png" /> </button>
+                    <button id="quickSettingsToggleBtn" class="unbutton game-action-card setting-btn" aria-label="Settings">
+                        <img src="assets/img/game-widgets.svg" alt="" />
+                        <span>Settings</span>
+                    </button>
                 </div>
-
+                <div id="quickSettingsPanel" class="quick-settings-panel hide" aria-label="Quick settings">
+                    <button id="quickCloseBtn" class="unbutton quick-box quick-box-close">
+                        <img src="assets/img/qs-close.svg" alt="" />
+                        <span>Close</span>
+                    </button>
+                    <button id="quickBoardBtn" class="unbutton quick-box quick-box-light">
+                        <img src="assets/img/qs-board.svg" alt="" />
+                        <span id="quickBoardText">Board</span>
+                    </button>
+                    <button id="quickEasyBtn" class="unbutton quick-box quick-box-light">
+                        <img src="assets/img/qs-swords.svg" alt="" />
+                        <span id="quickEasyText">Easy</span>
+                    </button>
+                    <button id="quick3DBtn" class="unbutton quick-box quick-box-light">
+                        <img src="assets/img/qs-cube.svg" alt="" />
+                        <span id="quick3DText">3D</span>
+                    </button>
+                </div>
             </div>
-
         </div>
 
 

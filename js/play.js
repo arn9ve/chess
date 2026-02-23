@@ -52,6 +52,10 @@ $(function() {
         turnEl = $('#turns'),
         fenEl = $('#fen'),
         pgnEl = $('#pgn');
+    var lastMoveOneIconEl = $('#lastMoveOneIcon');
+    var lastMoveOneTextEl = $('#lastMoveOneText');
+    var lastMoveTwoIconEl = $('#lastMoveTwoIcon');
+    var lastMoveTwoTextEl = $('#lastMoveTwoText');
 
     var gameMode = 'gate'; // gate | offline | host | guest
     var myColor = 'w';
@@ -75,6 +79,17 @@ $(function() {
     var shareToastStatusEl = $('#shareToastStatus');
     var shareToastCopyBtnEl = $('#shareToastCopyBtn');
     var shareToastCopyTextEl = $('#shareToastCopyText');
+    var primaryActionRowEl = $('#primaryActionRow');
+    var quickSettingsPanelEl = $('#quickSettingsPanel');
+    var quickSettingsToggleBtnEl = $('#quickSettingsToggleBtn');
+    var quickCloseBtnEl = $('#quickCloseBtn');
+    var quickBoardBtnEl = $('#quickBoardBtn');
+    var quickEasyBtnEl = $('#quickEasyBtn');
+    var quick3DBtnEl = $('#quick3DBtn');
+    var quickBoardTextEl = $('#quickBoardText');
+    var quickEasyTextEl = $('#quickEasyText');
+    var quick3DTextEl = $('#quick3DText');
+    var quickPanelAnimating = false;
 
     // true for when the engine is processing; ignore_mouse_events is always true if this is set (also during animations)
     var engineRunning = false;
@@ -195,6 +210,55 @@ $(function() {
         setTimeout(function() {
             $btn.text(previous);
         }, 1200);
+    }
+
+    function showQuickSettings() {
+        primaryActionRowEl.addClass('hide');
+        quickSettingsPanelEl.removeClass('hide');
+        primaryActionRowEl.removeClass('quick-panel-enter quick-panel-leave');
+        quickSettingsPanelEl.removeClass('quick-panel-enter quick-panel-leave');
+    }
+
+    function hideQuickSettings() {
+        quickSettingsPanelEl.addClass('hide');
+        primaryActionRowEl.removeClass('hide');
+        primaryActionRowEl.removeClass('quick-panel-enter quick-panel-leave');
+        quickSettingsPanelEl.removeClass('quick-panel-enter quick-panel-leave');
+    }
+
+    function swapQuickPanels(fromEl, toEl) {
+        if (quickPanelAnimating) {
+            return;
+        }
+        if (fromEl.hasClass('hide') || !toEl.hasClass('hide')) {
+            return;
+        }
+        quickPanelAnimating = true;
+        fromEl.addClass('quick-panel-leave');
+        setTimeout(function() {
+            fromEl.addClass('hide').removeClass('quick-panel-leave');
+            toEl.removeClass('hide').addClass('quick-panel-enter');
+            requestAnimationFrame(function() {
+                toEl.removeClass('quick-panel-enter');
+            });
+            setTimeout(function() {
+                quickPanelAnimating = false;
+            }, 230);
+        }, 220);
+    }
+
+    function showQuickSettingsAnimated() {
+        swapQuickPanels(primaryActionRowEl, quickSettingsPanelEl);
+    }
+
+    function hideQuickSettingsAnimated() {
+        swapQuickPanels(quickSettingsPanelEl, primaryActionRowEl);
+    }
+
+    function updateQuickSettingsLabels() {
+        quickBoardTextEl.text(board && board.orientation && board.orientation() === 'black' ? 'Flipped' : 'Board');
+        quickEasyTextEl.text((engineLevelName() || 'easy').replace(/^./, function(c) { return c.toUpperCase(); }));
+        quick3DTextEl.text(board3D ? '3D' : '2D');
     }
 
     function copyText(text) {
@@ -330,6 +394,7 @@ $(function() {
     function startOfflineMode() {
         closeNetworking();
         showModeActions();
+        hideQuickSettings();
         gameMode = 'offline';
         myColor = 'w';
         player = 'w';
@@ -350,6 +415,7 @@ $(function() {
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
         hideModeGate();
+        hideQuickSettings();
         updateStatus();
 
         peerNode = new Peer();
@@ -382,6 +448,7 @@ $(function() {
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
         hideModeGate();
+        hideQuickSettings();
         showShareToast(window.location.href);
         updateShareToastStatus('Connecting to host...');
         updateStatus();
@@ -517,6 +584,43 @@ $(function() {
         }
     }
 
+    function pieceSprite(move) {
+        if (!move || !move.color || !move.piece) {
+            return 'img/chesspieces/alpha/wP.png';
+        }
+        var color = move.color === 'b' ? 'b' : 'w';
+        var piece = (move.piece + '').toUpperCase();
+        return 'img/chesspieces/alpha/' + color + piece + '.png';
+    }
+
+    function moveText(move) {
+        if (!move || !move.from || !move.to) {
+            return '--';
+        }
+        return move.to.toUpperCase();
+    }
+
+    function renderLastMovesUI() {
+        var latest = moveList.length ? moveList[moveList.length - 1] : null;
+        var previous = moveList.length > 1 ? moveList[moveList.length - 2] : null;
+
+        if (previous) {
+            lastMoveOneIconEl.attr('src', pieceSprite(previous));
+            lastMoveOneTextEl.text(moveText(previous));
+        } else {
+            lastMoveOneIconEl.attr('src', 'img/chesspieces/alpha/wP.png');
+            lastMoveOneTextEl.text('--');
+        }
+
+        if (latest) {
+            lastMoveTwoIconEl.attr('src', pieceSprite(latest));
+            lastMoveTwoTextEl.text(moveText(latest));
+        } else {
+            lastMoveTwoIconEl.attr('src', 'img/chesspieces/alpha/bP.png');
+            lastMoveTwoTextEl.text('--');
+        }
+    }
+
     function updateStatus() {
 
         var status = '';
@@ -556,14 +660,14 @@ $(function() {
         else {
             if (isMultiplayer()) {
                 if (!peerConn || !peerConn.open) {
-                    status = isHost() ? "Waiting for friend to join..." : "Connecting to host...";
+                    status = moveColor + " Turn (Connecting...)";
                 } else {
-                    status = (game.turn() === myColor) ? "Your turn" : "Opponent turn";
+                    status = moveColor + " Turn";
                 }
                 turns = "Online Match";
             } else {
-                status = "";
-                turns += moveColor + ' Turns';
+                status = moveColor + " Turn";
+                turns = "";
             }
 
             // check?
@@ -586,6 +690,7 @@ $(function() {
         }
         statusEl.html(status);
         turnEl.html(turns);
+        renderLastMovesUI();
     };
 
     // Set up chessboard
@@ -814,6 +919,34 @@ $(function() {
         });
     });
 
+    quickSettingsToggleBtnEl.on('click', function() {
+        showQuickSettingsAnimated();
+        updateQuickSettingsLabels();
+    });
+
+    quickCloseBtnEl.on('click', function() {
+        hideQuickSettingsAnimated();
+    });
+
+    quickBoardBtnEl.on('click', function() {
+        $('#flipBtn').trigger('click');
+        updateQuickSettingsLabels();
+    });
+
+    quickEasyBtnEl.on('click', function() {
+        var levels = ['easy', 'medium', 'hard'];
+        var current = engineLevelName();
+        var idx = levels.indexOf(current);
+        var next = levels[(idx + 1 + levels.length) % levels.length];
+        $('input[name="engineMenu"][data-level="' + next + '"]').prop('checked', true).trigger('change');
+        updateQuickSettingsLabels();
+    });
+
+    quick3DBtnEl.on('click', function() {
+        $('#dimensionBtn').trigger('click');
+        setTimeout(updateQuickSettingsLabels, 120);
+    });
+
     $("#setFEN").on('click', function(e) {
         swal({
             title: "SET FEN",
@@ -1005,4 +1138,6 @@ $(function() {
     });
 
     updateStatus();
+    updateQuickSettingsLabels();
+    hideQuickSettings();
 });
