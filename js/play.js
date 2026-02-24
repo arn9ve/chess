@@ -56,6 +56,7 @@ $(function() {
     var lastMoveOneTextEl = $('#lastMoveOneText');
     var lastMoveTwoIconEl = $('#lastMoveTwoIcon');
     var lastMoveTwoTextEl = $('#lastMoveTwoText');
+    var pgnBoxEl = $('#pgnBox');
 
     var gameMode = 'gate'; // gate | offline | host | guest
     var myColor = 'w';
@@ -96,6 +97,7 @@ $(function() {
 
     // don't let the user press buttons while other button clicks are still processing
     var board3D = ChessBoard3.webGLEnabled();
+    var boardInfoVisible = false;
 
     if (!board3D) {
         swal("WebGL unsupported or disabled.", "Using a 2D board...");
@@ -255,9 +257,24 @@ $(function() {
         swapQuickPanels(quickSettingsPanelEl, primaryActionRowEl);
     }
 
+    function rebuildBoardPreservingState() {
+        if (!board) {
+            return;
+        }
+        var position = board.position();
+        var orientation = board.orientation();
+        board.destroy();
+        board = createBoard($('#piecesMenu').val());
+        board.orientation(orientation);
+        board.position(position, false);
+        adjustBoardWidth();
+    }
+
     function updateQuickSettingsLabels() {
-        quickBoardTextEl.text(board && board.orientation && board.orientation() === 'black' ? 'Flipped' : 'Board');
-        quickEasyTextEl.text((engineLevelName() || 'easy').replace(/^./, function(c) { return c.toUpperCase(); }));
+        quickBoardTextEl.text('Board');
+        quickBoardBtnEl.toggleClass('quick-box-off', !boardInfoVisible);
+        quickBoardBtnEl.attr('aria-pressed', boardInfoVisible ? 'true' : 'false');
+        quickEasyTextEl.text((currentLevel() || 'easy').replace(/^./, function(c) { return c.toUpperCase(); }));
         quick3DTextEl.text(board3D ? '3D' : '2D');
     }
 
@@ -634,15 +651,15 @@ $(function() {
         if (game.game_over()) {
 
             if (game.in_checkmate()) {
-                status = moveColor + ' checkmated';
+                status = moveColor + ' mated';
             } else if (game.in_stalemate()) {
-                status = moveColor + " stalemated";
+                status = "Stalemate";
             } else if (game.insufficient_material()) {
-                status = "Draw (insufficient material)."
+                status = "Draw: Material";
             } else if (game.in_threefold_repetition()) {
-                status = "Draw (threefold repetition)."
+                status = "Draw: Repetition";
             } else if (game.in_draw()) {
-                status = "Game over (fifty move rule)."
+                status = "Draw: 50-move";
             }
             swal({
                 title : "Game Over",
@@ -660,19 +677,19 @@ $(function() {
         else {
             if (isMultiplayer()) {
                 if (!peerConn || !peerConn.open) {
-                    status = moveColor + " Turn (Connecting...)";
+                    status = moveColor + " turn • Join...";
                 } else {
-                    status = moveColor + " Turn";
+                    status = moveColor + " turn";
                 }
                 turns = "Online Match";
             } else {
-                status = moveColor + " Turn";
+                status = moveColor + " turn";
                 turns = "";
             }
 
             // check?
             if (game.in_check() === true) {
-                status += ' ' + moveColor + ' is in check';
+                status += ' • Check';
             }
         }
 
@@ -685,8 +702,9 @@ $(function() {
             entirePGN = currentPGN;
         }
         pgnEl.html(currentPGN);
+        pgnBoxEl.toggleClass('hide', moveList.length === 0);
         if (!isMultiplayer() && engineRunning) {
-            status += ' Thinking...';
+            status += ' • Think';
         }
         statusEl.html(status);
         turnEl.html(turns);
@@ -788,6 +806,7 @@ $(function() {
             maxDistance: 26,
             draggable: true,
             position: 'start',
+            showNotation: boardInfoVisible,
             onDrop: onDrop,
             onMouseoutSquare: onMouseoutSquare,
             onMouseoverSquare: onMouseoverSquare,
@@ -914,7 +933,8 @@ $(function() {
         setTimeout(function () {
             board = createBoard($('#piecesMenu').val());
             board.orientation(orientation);
-            board.position(position);
+            board.position(position, false);
+            adjustBoardWidth();
             $("#dimensionBtn").prop('disabled', false);
         });
     });
@@ -929,13 +949,14 @@ $(function() {
     });
 
     quickBoardBtnEl.on('click', function() {
-        $('#flipBtn').trigger('click');
+        boardInfoVisible = !boardInfoVisible;
+        rebuildBoardPreservingState();
         updateQuickSettingsLabels();
     });
 
     quickEasyBtnEl.on('click', function() {
         var levels = ['easy', 'medium', 'hard'];
-        var current = engineLevelName();
+        var current = currentLevel();
         var idx = levels.indexOf(current);
         var next = levels[(idx + 1 + levels.length) % levels.length];
         $('input[name="engineMenu"][data-level="' + next + '"]').prop('checked', true).trigger('change');
@@ -1072,6 +1093,7 @@ $(function() {
             engine.postMessage('ucinewgame');
             updateScoreGauge(0); // they each act a little differently
         }
+        updateQuickSettingsLabels();
     });
 
     $('#piecesMenu').change(function() {

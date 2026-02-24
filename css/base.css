@@ -607,8 +607,9 @@ main {
     left: 40px;
     right: 40px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: flex-start;
+    gap: 16px;
     z-index: 100;
 }
 
@@ -745,6 +746,16 @@ main {
     place-items: center;
 }
 
+.quick-box-off {
+    background: transparent;
+    border-color: #b9b3e9;
+    color: #b9b3e9;
+}
+
+.quick-box-off img {
+    opacity: 0.85;
+}
+
 .game-logo-card {
     width: 128px;
     height: 128px;
@@ -812,6 +823,7 @@ main {
     justify-content: space-between;
     gap: 16px;
     cursor: pointer;
+    margin-left: auto;
 }
 
 .game-piece-icons {
