@@ -60,21 +60,29 @@ $(function() {
 
     var gameMode = 'gate'; // gate | offline | host | guest
     var myColor = 'w';
+    var hostPreferredColor = 'w';
+    var hostPlayerName = 'Player 1';
+    var opponentName = '';
+    var opponentColor = '';
     var peerNode = null;
     var peerConn = null;
     var hostRoomCode = '';
     var hostInviteLink = '';
+    var guestReady = false;
+    var matchStarted = false;
     var waitingRotationId = null;
     var waitingRotationAngle = 0;
 
     var modeGateEl = $('#modeGate');
     var modeActionButtonsEl = $('#modeActionButtons');
-    var modeHostPanelEl = $('#modeHostPanel');
-    var hostStatusTextEl = $('#hostStatusText');
-    var hostCodeInputEl = $('#hostCodeInput');
-    var hostLinkInputEl = $('#hostLinkInput');
-    var copyHostCodeBtnEl = $('#copyHostCodeBtn');
-    var copyHostLinkBtnEl = $('#copyHostLinkBtn');
+    var mpPlayerNameInputEl = $('#mpPlayerNameInput');
+    var mpCopyLinkBtnEl = $('#mpCopyLinkBtn');
+    var mpPlayBtnEl = $('#mpPlayBtn');
+    var mpGuestPieceCardEl = $('#mpGuestPieceCard');
+    var mpOpponentNameEl = $('#mpOpponentName');
+    var mpMyPieceImgEl = $('#mpMyPieceImg');
+    var mpOpponentPieceImgEl = $('#mpOpponentPieceImg');
+    var modeShellEl = $('.mode-shell');
     var shareToastEl = $('#shareToast');
     var shareToastLinkEl = $('#shareToastLink');
     var shareToastStatusEl = $('#shareToastStatus');
@@ -92,6 +100,9 @@ $(function() {
     var quick3DTextEl = $('#quick3DText');
     var quickPanelAnimating = false;
 
+    var gameModeCardLabelEl = $('#gameModeCardLabel');
+    var gameModeCardIconEl = $('#gameModeCardIcon');
+
     // true for when the engine is processing; ignore_mouse_events is always true if this is set (also during animations)
     var engineRunning = false;
 
@@ -100,7 +111,12 @@ $(function() {
     var boardInfoVisible = false;
 
     if (!board3D) {
-        swal("WebGL unsupported or disabled.", "Using a 2D board...");
+        swal({
+            title: "WebGL unsupported or disabled.",
+            text: "Using a 2D board...",
+            type: "info",
+            confirmButtonText: "OK"
+        });
         $('#dimensionBtn').remove();
     }
 
@@ -114,6 +130,18 @@ $(function() {
 
     function isGuest() {
         return gameMode === 'guest';
+    }
+
+    function updateGameModeLabel() {
+        if (!gameModeCardLabelEl.length) {
+            return;
+        }
+        var multi = isMultiplayer();
+        gameModeCardLabelEl.text(multi ? 'Multi' : 'Solo');
+        if (gameModeCardIconEl.length) {
+            gameModeCardIconEl.attr('src', multi ? 'assets/img/figma-multi/icon-group.svg' : 'assets/img/game-person.svg');
+        }
+        $('#hintBtn').toggleClass('hide', multi).prop('disabled', multi);
     }
 
     function disableEngineControlsForMultiplayer() {
@@ -136,14 +164,100 @@ $(function() {
     function hideModeGate() {
         modeGateEl.addClass('hidden');
     }
+
+    var PIECE_IMG_WHITE = 'assets/img/figma-multi/piece-selected-primary.png';
+    var PIECE_IMG_BLACK = 'assets/img/figma-multi/piece-selected-secondary.png';
+
+    function pieceImgForColor(color) {
+        return (color === 'b' ? PIECE_IMG_BLACK : PIECE_IMG_WHITE);
+    }
+
+    function updateMyPieceCard() {
+        var color = isGuest() ? hostPreferredColor : hostPreferredColor;
+        mpMyPieceImgEl.attr('src', pieceImgForColor(color));
+    }
+
+    function updateOpponentPieceCard() {
+        if (!opponentColor) {
+            mpOpponentPieceImgEl.attr('src', PIECE_IMG_BLACK);
+            return;
+        }
+        mpOpponentPieceImgEl.attr('src', pieceImgForColor(opponentColor));
+    }
+
+    function setOpponentLobby(name, color) {
+        opponentName = name || '';
+        opponentColor = color || '';
+        mpOpponentNameEl.text(opponentName ? opponentName : 'Waiting for player…');
+        mpOpponentNameEl.closest('.mp-player-block').toggleClass('mp-opponent-ready', !!opponentName);
+        updateOpponentPieceCard();
+    }
+
+    function sendLobby() {
+        if (!peerConn || !peerConn.open) {
+            return;
+        }
+        var myName = isHost() ? hostPlayerName : hostPlayerName;
+        var myColorChoice = hostPreferredColor;
+        sendPeerMessage('lobby', { name: myName, color: myColorChoice });
+    }
+
+    function applyLobbyFromPeer(data) {
+        if (!data || data.type !== 'lobby') {
+            return;
+        }
+        var name = (data.name && String(data.name).trim()) ? String(data.name).trim() : '';
+        var color = (data.color === 'b' || data.color === 'w') ? data.color : '';
+        setOpponentLobby(name, color);
+        if (isHost()) {
+            setGuestReady(!!name);
+            setPlayEnabled(!!name);
+            if (!matchStarted && name) {
+                showJoinInfo('Second player joined. Press Play to start.');
+            }
+        }
+    }
+
+    function setRoomGuestView(isGuest) {
+        modeShellEl.toggleClass('mp-room-guest', !!isGuest);
+    }
+
+    function setGateSubmenuVisible(isVisible) {
+        modeGateEl.toggleClass('mode-gate--submenu', !!isVisible);
+        if (!isVisible) {
+            showJoinInfo('');
+        }
+    }
+
+    function setGuestReady(isReady) {
+        guestReady = !!isReady;
+        mpGuestPieceCardEl.toggleClass('is-ready', guestReady);
+        mpGuestPieceCardEl.attr('aria-label', guestReady ? 'Player connected' : 'Waiting player');
+    }
+
+    function setPlayEnabled(isEnabled) {
+        mpPlayBtnEl.toggleClass('mp-action-btn-disabled', !isEnabled);
+        mpPlayBtnEl.attr('aria-disabled', isEnabled ? 'false' : 'true');
+    }
+
+    function setHostColor(color) {
+        hostPreferredColor = color === 'b' ? 'b' : 'w';
+    }
     
     function showModeGate() {
         modeGateEl.removeClass('hidden');
+        setGateSubmenuVisible(false);
+        setRoomGuestView(false);
+        setOpponentLobby('', '');
         hideShareToast();
         closeNetworking();
         gameMode = 'gate';
         myColor = 'w';
         player = 'w';
+        setHostColor('w');
+        setGuestReady(false);
+        setPlayEnabled(false);
+        matchStarted = false;
         ensureEngineWorker();
         $('#hintBtn').prop('disabled', false).removeClass('hide');
         $('input[name="engineMenu"]').prop('disabled', false);
@@ -180,21 +294,12 @@ $(function() {
     }
 
     function showJoinInfo(text) {
-        $('#joinInfo').removeClass('hide').html('<strong>Joining...</strong><br>' + text);
-    }
-
-    function setHostStatus(text) {
-        hostStatusTextEl.text(text);
-    }
-
-    function showHostPanel() {
-        modeActionButtonsEl.addClass('hide');
-        modeHostPanelEl.removeClass('hide');
-    }
-
-    function showModeActions() {
-        modeHostPanelEl.addClass('hide');
-        modeActionButtonsEl.removeClass('hide');
+        var joinInfoEl = $('#joinInfo');
+        if (!text) {
+            joinInfoEl.addClass('hide').text('');
+            return;
+        }
+        joinInfoEl.removeClass('hide').text(text);
     }
 
     function buildHostInvite(id) {
@@ -202,16 +307,6 @@ $(function() {
         inviteURL.searchParams.set('join', id);
         hostRoomCode = id;
         hostInviteLink = inviteURL.toString();
-        hostCodeInputEl.val(hostRoomCode);
-        hostLinkInputEl.val(hostInviteLink);
-    }
-
-    function flashCopiedButton($btn) {
-        var previous = $btn.text();
-        $btn.text('Copied');
-        setTimeout(function() {
-            $btn.text(previous);
-        }, 1200);
     }
 
     function showQuickSettings() {
@@ -361,21 +456,19 @@ $(function() {
         peerConn = conn;
         peerConn.on('open', function() {
             if (isHost()) {
-                sendPeerMessage('init', {
-                    fen: game.fen(),
-                    color: 'b'
-                });
-                updateShareToastStatus('Friend connected! Game starting...');
-                setTimeout(function() {
-                    hideShareToast();
-                }, 3000);
+                sendLobby();
             } else {
-                hideShareToast();
+                sendLobby();
+                showJoinInfo('Connected. Choose your name and color. Waiting for host to start…');
             }
             updateStatus();
         });
         peerConn.on('data', function(data) {
             if (!data || !data.type) {
+                return;
+            }
+            if (data.type === 'lobby') {
+                applyLobbyFromPeer(data);
                 return;
             }
             if (data.type === 'init' && isGuest()) {
@@ -387,6 +480,8 @@ $(function() {
                 moveList = [];
                 scoreList = [];
                 cursor = 0;
+                setRoomGuestView(false);
+                hideModeGate();
                 updateStatus();
             } else if (data.type === 'move') {
                 applyRemoteMove(data.move);
@@ -396,21 +491,46 @@ $(function() {
         });
         peerConn.on('close', function() {
             if (isHost()) {
-                showShareToast(hostInviteLink);
-                updateShareToastStatus('Friend disconnected. Share the link again to reconnect.');
+                setGuestReady(false);
+                setPlayEnabled(false);
+                setOpponentLobby('', '');
+                if (!modeGateEl.hasClass('hidden')) {
+                    showJoinInfo('Player disconnected. Share link again.');
+                } else {
+                    swal({
+                        title: "Connection closed",
+                        text: "Your friend disconnected.",
+                        type: "info",
+                        confirmButtonText: "OK"
+                    });
+                }
             } else {
-                swal("Connection closed", "Your friend disconnected.", "info");
+                swal({
+                    title: "Connection closed",
+                    text: "Your friend disconnected.",
+                    type: "info",
+                    confirmButtonText: "OK"
+                });
             }
             updateStatus();
         });
         peerConn.on('error', function() {
-            swal("Connection error", "Unable to sync match state.", "error");
+            swal({
+                title: "Connection error",
+                text: "Unable to sync match state.",
+                type: "error",
+                confirmButtonText: "OK"
+            });
         });
     }
 
     function startOfflineMode() {
         closeNetworking();
-        showModeActions();
+        setGateSubmenuVisible(false);
+        setGuestReady(false);
+        setPlayEnabled(false);
+        showJoinInfo('');
+        matchStarted = false;
         hideQuickSettings();
         gameMode = 'offline';
         myColor = 'w';
@@ -422,24 +542,36 @@ $(function() {
 
     function startHostingMode() {
         if (typeof window.Peer !== 'function') {
-            swal("Unavailable", "Game Host needs network support.", "error");
+            swal({
+                title: "Unavailable",
+                text: "Game Host needs network support.",
+                type: "error",
+                confirmButtonText: "OK"
+            });
             return;
         }
         closeNetworking();
+        hideShareToast();
+        setGateSubmenuVisible(true);
+        setRoomGuestView(false);
+        setOpponentLobby('', '');
         gameMode = 'host';
-        myColor = 'w';
-        player = 'w';
+        myColor = hostPreferredColor;
+        player = myColor;
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
-        hideModeGate();
         hideQuickSettings();
+        setGuestReady(false);
+        setPlayEnabled(false);
+        matchStarted = false;
+        showJoinInfo('Creating room...');
+        updateMyPieceCard();
         updateStatus();
 
         peerNode = new Peer();
         peerNode.on('open', function(id) {
             buildHostInvite(id);
-            showShareToast(hostInviteLink);
-            updateShareToastStatus('Share the link with a friend to start playing');
+            showJoinInfo('Copy link and wait for second player.');
         });
         peerNode.on('connection', function(conn) {
             if (peerConn && peerConn.open) {
@@ -449,8 +581,36 @@ $(function() {
             bindPeerConnection(conn);
         });
         peerNode.on('error', function() {
-            updateShareToastStatus('Unable to create room. Please try again.');
+            showJoinInfo('Unable to create room. Please try again.');
         });
+    }
+
+    function startHostedMatch() {
+        if (!isHost()) {
+            return;
+        }
+        if (!peerConn || !peerConn.open) {
+            showJoinInfo('Waiting for second player...');
+            return;
+        }
+
+        matchStarted = true;
+        myColor = hostPreferredColor;
+        player = myColor;
+        game = new Chess();
+        moveList = [];
+        scoreList = [];
+        cursor = 0;
+        board.start();
+        board.orientation(myColor === 'w' ? 'white' : 'black');
+        updateStatus();
+
+        sendPeerMessage('init', {
+            fen: game.fen(),
+            color: myColor === 'w' ? 'b' : 'w'
+        });
+
+        hideModeGate();
     }
 
     function startGuestMode(hostId) {
@@ -460,14 +620,23 @@ $(function() {
         }
         closeNetworking();
         gameMode = 'guest';
+        hostPlayerName = 'Player 2';
+        mpPlayerNameInputEl.val('Player 2');
+        hostPreferredColor = 'b';
         myColor = 'b';
         player = 'b';
         disableEngineControlsForMultiplayer();
         stopEngineForMultiplayer();
-        hideModeGate();
         hideQuickSettings();
-        showShareToast(window.location.href);
-        updateShareToastStatus('Connecting to host...');
+        setGateSubmenuVisible(true);
+        modeGateEl.removeClass('hidden');
+        setRoomGuestView(true);
+        setOpponentLobby('', '');
+        setGuestReady(false);
+        setPlayEnabled(false);
+        matchStarted = false;
+        showJoinInfo('Connecting…');
+        updateMyPieceCard();
         updateStatus();
 
         peerNode = new Peer();
@@ -476,10 +645,23 @@ $(function() {
             bindPeerConnection(conn);
         });
         peerNode.on('error', function() {
-            updateShareToastStatus('Unable to connect. Check the link and try again.');
+            showJoinInfo('Unable to connect. Check the link and try again.');
             setTimeout(function() {
-                swal("Join error", "Unable to connect to host link.", "error");
-            }, 1000);
+                swal({
+                    title: "Join error",
+                    text: "Unable to connect to host link.",
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonText: "Retry",
+                    cancelButtonText: "OK",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }, function(confirmed) {
+                    if (confirmed === true) {
+                        startGuestMode(hostId);
+                    }
+                });
+            }, 500);
         });
     }
 
@@ -662,12 +844,11 @@ $(function() {
                 status = "Draw: 50-move";
             }
             swal({
-                title : "Game Over",
-                text : status,
-                type: 'info',
+                title: "Game Over",
+                text: status,
+                type: "info",
                 showCancelButton: false,
-                confirmButtonColor: "#DD6655",
-                onConfirmButtonText: 'OK',
+                confirmButtonText: "OK",
                 closeOnConfirm: true
             });
             engineRunning = false;
@@ -709,6 +890,7 @@ $(function() {
         statusEl.html(status);
         turnEl.html(turns);
         renderLastMovesUI();
+        updateGameModeLabel();
     };
 
     // Set up chessboard
@@ -1053,7 +1235,12 @@ $(function() {
 
     $("#resetBtn").on('click', function(e) {
         if (isGuest()) {
-            swal("Guest mode", "Only host can reset the match.", "info");
+            swal({
+                title: "Guest mode",
+                text: "Only host can reset the match.",
+                type: "info",
+                confirmButtonText: "OK"
+            });
             return;
         }
         if (isHost()) {
@@ -1112,20 +1299,30 @@ $(function() {
         startHostingMode();
     });
 
-    $('#copyHostCodeBtn').on('click', function() {
-        if (!hostRoomCode) {
-            return;
+    mpPlayerNameInputEl.on('input', function() {
+        var trimmed = ($(this).val() || '').trim();
+        hostPlayerName = trimmed || 'Player 1';
+        if (isMultiplayer() && peerConn && peerConn.open) {
+            sendLobby();
         }
-        copyText(hostRoomCode);
-        flashCopiedButton(copyHostCodeBtnEl);
     });
 
-    $('#copyHostLinkBtn').on('click', function() {
+    mpCopyLinkBtnEl.on('click', function() {
         if (!hostInviteLink) {
+            showJoinInfo('Room is not ready yet...');
             return;
         }
         copyText(hostInviteLink);
-        flashCopiedButton(copyHostLinkBtnEl);
+        var label = $(this).find('span');
+        var previous = label.text();
+        label.text('Copied');
+        setTimeout(function() {
+            label.text(previous);
+        }, 1200);
+    });
+
+    mpPlayBtnEl.on('click', function() {
+        startHostedMatch();
     });
     
     $('#shareToastCopyBtn').on('click', function() {
@@ -1155,6 +1352,18 @@ $(function() {
     
     $('.logo').css('cursor', 'pointer').on('click', function() {
         if (gameMode !== 'gate') {
+            showModeGate();
+        }
+    });
+
+    $('#gameModeCardBtn').on('click', function() {
+        if (gameMode !== 'gate') {
+            showModeGate();
+        }
+    });
+
+    modeGateEl.find('.mp-logo-card').css('cursor', 'pointer').on('click', function() {
+        if (gameMode === 'host' || gameMode === 'guest') {
             showModeGate();
         }
     });

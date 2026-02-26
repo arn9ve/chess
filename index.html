@@ -42,32 +42,93 @@
 
 <body class="">
     <div id="modeGate" class="mode-gate">
-        <div class="mode-shell">
-            <div class="mode-left">
-                <h1 class="mode-title">Hidea's Chess</h1>
-                <div class="mode-logo-card">
-                    <img src="assets/img/menu-chess-figma.png" alt="Hidea Chess artwork" />
+        <div class="mode-shell multiplayer-menu">
+            <div class="mp-logo-card ">
+                <img src="assets/img/menu-chess-figma.png" alt="Hidea Chess artwork" />
+            </div>
+
+            <div class="mp-menu-center-block">
+                <div class="mp-main-card mp-main-only">
+                    <h1 class="mp-main-title">Hidea's Chess</h1>
+                    <div class="mp-main-art">
+                        <img src="assets/img/figma-main/main-card-art.png" alt="Hidea Chess artwork" />
+                    </div>
                 </div>
-                <div class="mode-footer">
-                    <span>&copy;Arnove</span>
-                    <span>2022</span>
+
+                <div class="mode-right mp-mode-buttons" id="modeActionButtons">
+                    <button id="playOfflineBtn" class="mode-btn mp-mode-btn">
+                        <span class="mode-btn-icon" aria-hidden="true">
+                            <img src="assets/img/figma-main/icon-person-main.svg" alt="" />
+                        </span>
+                        <span>Solo</span>
+                    </button>
+
+                    <button id="hostGameBtn" class="mode-btn mp-mode-btn">
+                        <span class="mode-btn-icon mode-btn-icon-group mp-host-icon-main" aria-hidden="true">
+                            <img src="assets/img/figma-main/icon-person-a-main.svg" alt="" />
+                            <img src="assets/img/figma-main/icon-person-b-main.svg" alt="" />
+                        </span>
+                        <span class="mode-btn-icon mp-host-icon-sub" aria-hidden="true">
+                            <img src="assets/img/figma-multi/icon-group.svg" alt="" />
+                        </span>
+                        <span>Multiplayer</span>
+                    </button>
                 </div>
             </div>
-            <div class="mode-right" id="modeActionButtons">
-                <button id="playOfflineBtn" class="mode-btn mode-btn-primary">
-                    <span class="mode-btn-icon" aria-hidden="true">
-                        <img src="assets/img/menu-person.svg" alt="" />
-                    </span>
-                    <span>Solo</span>
-                </button>
-                <button id="hostGameBtn" class="mode-btn mode-btn-ghost">
-                    <span class="mode-btn-icon mode-btn-icon-group" aria-hidden="true">
-                        <img src="assets/img/menu-person-a.svg" alt="" />
-                        <img src="assets/img/menu-person-b.svg" alt="" />
-                    </span>
-                    <span>Multiplayer</span>
-                </button>
+
+            <div class="mp-main-footer mp-main-only">
+                <span>&copy;Arnove</span>
+                <span>2022</span>
+            </div>
+
+            <!-- Lobby: two player blocks, single column each (label → image → name → colors) -->
+            <div class="mp-players-block mp-submenu-only">
+                <div class="mp-player-block mp-player-mine">
+                    <p class="mp-player-label">You</p>
+                    <div class="mp-piece-card mp-piece-card-mine" aria-label="Your color">
+                        <div class="mp-selected-piece">
+                            <img id="mpMyPieceImg" src="assets/img/figma-multi/piece-selected-primary.png" alt="" />
+                        </div>
+                    </div>
+                    <div class="mp-player-meta">
+                        <input id="mpPlayerNameInput" class="mp-name-input" type="text" maxlength="20" value="Player 1" placeholder="Your name" />
+                    </div>
+                </div>
+                <div class="mp-player-block mp-player-opponent">
+                    <p class="mp-player-label">Opponent</p>
+                    <div id="mpGuestPieceCard" class="mp-piece-card mp-piece-card-faded mp-piece-card-opponent" aria-label="Opponent">
+                        <div class="mp-selected-piece">
+                            <img id="mpOpponentPieceImg" src="assets/img/figma-multi/piece-selected-secondary.png" alt="" />
+                        </div>
+                    </div>
+                    <div class="mp-player-meta">
+                        <p id="mpOpponentName" class="mp-opponent-name" aria-live="polite">Waiting for player…</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mp-piece-strip mp-submenu-only" aria-hidden="true">
+                <span class="mp-piece-wrap"><img class="mp-piece-k" src="assets/img/figma-multi/piece-k.png" alt="" /></span>
+                <span class="mp-piece-wrap"><img class="mp-piece-q" src="assets/img/figma-multi/piece-q.png" alt="" /></span>
+                <span class="mp-piece-wrap"><img class="mp-piece-r" src="assets/img/figma-multi/piece-r.png" alt="" /></span>
+                <span class="mp-piece-wrap"><img class="mp-piece-n" src="assets/img/figma-multi/piece-n.png" alt="" /></span>
+                <span class="mp-piece-wrap"><img class="mp-piece-b" src="assets/img/figma-multi/piece-b.png" alt="" /></span>
+                <span class="mp-piece-wrap"><img class="mp-piece-p" src="assets/img/figma-multi/piece-p.png" alt="" /></span>
+            </div>
+
+            <!-- Status message + Copy link / Play: bottom right, multiplayer submenu only -->
+            <div class="mp-status-and-actions mp-submenu-only">
                 <div id="joinInfo" class="mode-join-info hide"></div>
+                <div class="mp-action-row">
+                    <button id="mpCopyLinkBtn" type="button" class="mp-action-btn mp-action-btn-host-only">
+                        <img src="assets/img/figma-multi/icon-copy.svg" alt="" />
+                        <span>Copy link</span>
+                    </button>
+                    <button id="mpPlayBtn" type="button" class="mp-action-btn mp-action-btn-primary mp-action-btn-disabled mp-action-btn-host-only" aria-disabled="true">
+                        <img src="assets/img/figma-multi/icon-play.svg" alt="" />
+                        <span>Play</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -141,10 +202,10 @@
 
             <div class="left-side">
                 <div class="game-action-row">
-                    <div class="game-action-card game-action-static">
-                        <img src="assets/img/game-person.svg" alt="" />
-                        <span>Solo</span>
-                    </div>
+                    <button type="button" id="gameModeCardBtn" class="unbutton game-action-card game-action-mode" aria-label="Open game mode menu">
+                        <img id="gameModeCardIcon" src="assets/img/game-person.svg" alt="" />
+                        <span id="gameModeCardLabel">Solo</span>
+                    </button>
                     <button class="unbutton game-action-card hint-btn" id="hintBtn">
                         <img src="assets/img/game-lightbulb.svg" alt="" />
                         <span>Hint</span>
