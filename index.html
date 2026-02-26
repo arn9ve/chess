@@ -254,55 +254,62 @@
 
 
         <div class="menu-wrap">
-            <div class="tiles hide-mo">
-                <div class="tiles__line">
-                    <div class="tiles__line-img" style="background-image:url(img/king.png)"></div>
-                    <div class="tiles__line-img" style="background-image:url(img/queen.png)"></div>
-                    <div class="tiles__line-img" style="background-image:url(img/bishop.png)"></div>
-                    <div class="tiles__line-img" style="background-image:url(img/knight.png)"></div>
-                    <div class="tiles__line-img" style="background-image:url(img/rock.png)"></div>
-                    <div class="tiles__line-img" style="background-image:url(img/pawn.png)"></div>
+            <nav class="menu figma-menu-surface" aria-label="Chess piece modal">
+                <div class="figma-modal-bg menu__item" aria-hidden="true">
+                    <div class="figma-modal-bg-plane figma-modal-bg-plane--left"></div>
+                    <div class="figma-modal-bg-plane figma-modal-bg-plane--right"></div>
+                    <div class="figma-modal-bg-plane figma-modal-bg-plane--floor"></div>
                 </div>
 
-            </div>
-          
-            
-            <nav class="menu">
+                <div class="figma-modal-pieces menu__item" aria-hidden="true">
+                    <img class="figma-modal-shadow" src="assets/img/figma-modal/ellipse-shadow.svg" alt="" />
+                    <img class="figma-modal-hero" src="assets/img/figma-modal/full-chess.png" alt="" />
+                </div>
 
-                <a class="menu__item">
-                    <h1 class="title1">Game Mode</h1>
-                </a>
-                <a class="menu__item">
+                <div class="figma-modal-product-name menu__item">Hidea's Chess</div>
 
+                <button class="unbutton button-close menu__item" type="button" aria-label="Close menu">
+                    <img src="assets/img/figma-modal/icon-close.svg" alt="" />
+                    <span>Close</span>
+                </button>
 
-                    <div class="gamemode">
+                <div class="figma-modal-action-grid menu__item">
+                    <button class="unbutton figma-modal-action figma-modal-action-soldout" type="button" aria-label="Sold out">
+                        <img src="assets/img/figma-modal/icon-bag.svg" alt="" />
+                        <span>Sold Out</span>
+                    </button>
+                    <button class="unbutton figma-modal-action figma-modal-action-download" type="button" aria-label="Download STL">
+                        <div class="figma-modal-action-download-head">
+                            <img src="assets/img/figma-modal/icon-download.svg" alt="" />
+                            <span>.STL</span>
+                        </div>
+                        <span>Download</span>
+                    </button>
+                </div>
 
-                        <label>
-                            <input type="radio" name="engineMenu" value="js/p4wn.js" data-level="easy" checked>
-                            <span> easy </span>
-                        </label>
-                        <label>
-                            <input type="radio" name="engineMenu" value="js/p4wn.js" data-level="medium">
-                            <span> medium </span>
-                        </label>
-                        <label>
-                            <input type="radio" name="engineMenu" value="js/lozza.js" data-level="hard">
-                            <span> hard </span>
-                        </label>
-
-                        <button class="unbotton dueD menu__item "  id="dimensionBtn" value="2D"> 2D </button>
-
-
+                <div class="figma-modal-product-info menu__item">
+                    <div class="figma-modal-product-thumb">
+                        <img src="assets/img/figma-modal/full-chess.png" alt="" />
                     </div>
+                    <div class="figma-modal-price-block">
+                        <p class="figma-modal-price">1€</p>
+                        <p class="figma-modal-price-label">Price</p>
+                    </div>
+                </div>
 
-                </a>
-               
-                    
-
+                <div class="figma-modal-hidden-controls" aria-hidden="true">
+                    <label>
+                        <input type="radio" name="engineMenu" value="js/p4wn.js" data-level="easy" checked />
+                    </label>
+                    <label>
+                        <input type="radio" name="engineMenu" value="js/p4wn.js" data-level="medium" />
+                    </label>
+                    <label>
+                        <input type="radio" name="engineMenu" value="js/lozza.js" data-level="hard" />
+                    </label>
+                    <button class="unbotton dueD" id="dimensionBtn" value="2D" type="button">2D</button>
+                </div>
             </nav>
-            <button class="unbutton button-close">
-                <img src="assets/img/close.svg" alt="">
-            </button>
         </div>
         
               

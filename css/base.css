@@ -1626,23 +1626,23 @@ main {
 /* Large screens: menu as right-side panel instead of full-screen overlay */
 @media screen and (min-width: 85em) {
     .menu-wrap {
-        background: rgba(35, 35, 35, 0.5);
-        backdrop-filter: blur(4px);
+        background: #B9B3E9;
+        backdrop-filter: none;
     }
 
     .menu-wrap.menu-wrap--open ~ .overlay {
-        opacity: 0;
+        opacity: 1;
         pointer-events: none;
-        transition: opacity 0.25s ease;
+        transition: none;
     }
 
     .menu-wrap .menu {
-        width: min(420px, 28rem);
-        max-width: 100%;
-        margin-left: auto;
-        background: #B9B3E9;
-        padding: 48px 40px;
-        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: none;
+        margin-left: 0;
+        background: transparent;
+        padding: 0;
+        box-shadow: none;
     }
 
     .menu-wrap .menu__item {
@@ -1659,8 +1659,8 @@ main {
     }
 
     .menu-wrap .button-close {
-        right: calc(min(420px, 28rem) + 1rem);
-        margin: 2rem;
+        right: auto;
+        margin: 0;
     }
 
     .menu-wrap .dueD {
@@ -1698,6 +1698,337 @@ main {
     text-align: right;
     position: relative;
     will-change: opacity, transform;
+}
+
+.figma-menu-surface {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 0;
+    overflow: hidden;
+    background: #b9b3e9;
+    font-family: "PP Neue Machina", "Inter", sans-serif;
+    color: #232323;
+}
+
+.figma-menu-surface .menu__item {
+    position: absolute;
+    margin: 0;
+}
+
+.figma-modal-bg {
+    inset: 0;
+    overflow: hidden;
+}
+
+.figma-modal-bg-plane {
+    position: absolute;
+    background-image: url("../assets/img/figma-modal/bg-pattern.png");
+    background-repeat: repeat;
+    background-size: 305px 465px;
+}
+
+.figma-modal-bg-plane--left {
+    left: -28vw;
+    top: -110vh;
+    width: 56vw;
+    min-width: 520px;
+    height: 280vh;
+    opacity: 0.8;
+    transform: rotate(-33.69deg) skewX(-33.69deg) scaleY(0.83);
+}
+
+.figma-modal-bg-plane--right {
+    right: -28vw;
+    top: -102vh;
+    width: 56vw;
+    min-width: 520px;
+    height: 270vh;
+    opacity: 0.75;
+    transform: rotate(33.69deg) skewX(33.69deg) scaleY(0.83);
+}
+
+.figma-modal-bg-plane--floor {
+    left: -62vw;
+    top: 57%;
+    width: 230vw;
+    height: 172vh;
+    transform: rotate(33.69deg) skewX(-22.42deg) scaleY(0.92);
+}
+
+.figma-modal-pieces {
+    left: 50%;
+    top: 52%;
+    width: min(82vw, 1068px);
+    height: min(68vh, 680px);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.figma-modal-shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: min(83vw, 848px);
+    transform: translateX(-50%);
+    opacity: 0.9;
+}
+
+.figma-modal-hero {
+    position: absolute;
+    left: 50%;
+    top: -42%;
+    width: min(96vw, 1068px);
+    max-width: none;
+    transform: translateX(-50%);
+}
+
+.figma-modal-product-name,
+.figma-menu-surface .button-close,
+.figma-modal-product-info,
+.figma-modal-action {
+    border: 0.5px solid #232323;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+
+.figma-modal-product-name {
+    left: clamp(16px, 3.9vw, 40px);
+    top: clamp(16px, 6vh, 40px);
+    border-radius: 24px;
+    background: #fff;
+    padding: clamp(14px, 2.2vw, 24px);
+    font-size: clamp(16px, 2.05vw, 20px);
+    font-style: oblique;
+    font-weight: 500;
+    line-height: 1;
+    z-index: 4;
+}
+
+.figma-menu-surface .button-close {
+    right: clamp(16px, 3.9vw, 40px);
+    top: clamp(16px, 6vh, 40px);
+    width: clamp(90px, 12.5vw, 128px);
+    height: clamp(90px, 12.5vw, 128px);
+    padding: clamp(12px, 1.5vw, 16px);
+    border-radius: 20px;
+    background: #b9b3e9;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    z-index: 4;
+}
+
+.figma-menu-surface .button-close img {
+    width: 24px;
+    height: 24px;
+}
+
+.figma-menu-surface .button-close span {
+    width: 100%;
+    text-align: right;
+    font-size: clamp(14px, 1.7vw, 20px);
+    line-height: 1;
+    color: #232323;
+    font-style: oblique;
+    font-weight: 500;
+}
+
+.figma-modal-product-info {
+    left: clamp(16px, 3.9vw, 40px);
+    bottom: clamp(16px, 6vh, 40px);
+    width: clamp(280px, 35.6vw, 364px);
+    height: clamp(144px, 28.7vh, 190px);
+    border-radius: clamp(30px, 4.7vw, 48px);
+    background: #fff;
+    display: flex;
+    align-items: stretch;
+    gap: clamp(12px, 2.4vw, 24px);
+    padding: clamp(12px, 1.6vw, 16px);
+    z-index: 4;
+}
+
+.figma-modal-product-thumb {
+    width: clamp(120px, 15.4vw, 158px);
+    flex: 0 0 auto;
+    border-radius: clamp(24px, 3.4vw, 34px);
+    overflow: hidden;
+    background: #b9b3e9;
+}
+
+.figma-modal-product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.figma-modal-price-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(10px, 3vh, 24px);
+    min-width: 0;
+}
+
+.figma-modal-price {
+    margin: 0;
+    font-size: clamp(44px, 7.8vw, 64px);
+    line-height: 0.9;
+    color: #232323;
+    font-style: oblique;
+    font-weight: 500;
+}
+
+.figma-modal-price-label {
+    margin: 0;
+    font-size: clamp(26px, 3.9vw, 32px);
+    line-height: 1;
+    color: #232323;
+    opacity: 0.2;
+    font-weight: 500;
+}
+
+.figma-modal-action-grid {
+    right: clamp(16px, 3.9vw, 40px);
+    bottom: clamp(16px, 6vh, 40px);
+    width: clamp(204px, 26.2vw, 268px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(8px, 1.2vw, 12px);
+    z-index: 4;
+}
+
+.figma-modal-action {
+    width: 100%;
+    height: clamp(90px, 12.5vw, 128px);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: clamp(12px, 1.5vw, 16px);
+    font-style: oblique;
+    font-weight: 500;
+}
+
+.figma-modal-action img {
+    width: 24px;
+    height: 24px;
+}
+
+.figma-modal-action-soldout {
+    background: #b9b3e9;
+    color: #232323;
+}
+
+.figma-modal-action-soldout span {
+    width: 100%;
+    text-align: right;
+    font-size: clamp(14px, 1.7vw, 20px);
+    line-height: 1;
+}
+
+.figma-modal-action-download {
+    background: #232323;
+    border-color: #b9b3e9;
+    color: #b9b3e9;
+}
+
+.figma-modal-action-download-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.figma-modal-action-download-head span {
+    font-size: clamp(14px, 1.7vw, 20px);
+    line-height: 1;
+}
+
+.figma-modal-action-download > span:last-child {
+    width: 100%;
+    text-align: right;
+    font-size: clamp(14px, 1.7vw, 20px);
+    line-height: 1;
+}
+
+.figma-modal-hidden-controls {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+    padding: 0;
+    margin: -1px;
+}
+
+@media screen and (max-width: 900px) {
+    .figma-modal-pieces {
+        top: 48%;
+        width: 94vw;
+        height: 54vh;
+    }
+
+    .figma-modal-hero {
+        top: -36%;
+    }
+
+    .figma-modal-shadow {
+        width: 72vw;
+    }
+
+    .figma-modal-action {
+        border-radius: 16px;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .figma-modal-product-name {
+        top: 12px;
+        left: 12px;
+    }
+
+    .figma-menu-surface .button-close {
+        top: 12px;
+        right: 12px;
+        border-radius: 16px;
+    }
+
+    .figma-modal-pieces {
+        top: 44%;
+        height: 48vh;
+    }
+
+    .figma-modal-action-grid {
+        right: 12px;
+        bottom: 172px;
+        width: 184px;
+    }
+
+    .figma-modal-action {
+        border-radius: 14px;
+    }
+
+    .figma-modal-product-info {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+        height: 148px;
+        border-radius: 28px;
+    }
+
+    .figma-modal-product-thumb {
+        width: 116px;
+        border-radius: 20px;
+    }
 }
 
 .tiles {
