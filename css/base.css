@@ -1730,36 +1730,40 @@ main {
 }
 
 .figma-modal-bg-plane--left {
-    left: -28vw;
-    top: -110vh;
-    width: 56vw;
-    min-width: 520px;
-    height: 280vh;
+    right: 50%;
+    top: -100%;
+    width: 200vw;
+    height: 300vh;
     opacity: 0.8;
+    background-position: right top;
+    transform-origin: top right;
     transform: rotate(-33.69deg) skewX(-33.69deg) scaleY(0.83);
 }
 
 .figma-modal-bg-plane--right {
-    right: -28vw;
-    top: -102vh;
-    width: 56vw;
-    min-width: 520px;
-    height: 270vh;
+    left: 50%;
+    top: -100%;
+    width: 200vw;
+    height: 300vh;
     opacity: 0.75;
+    background-position: left top;
+    transform-origin: top left;
     transform: rotate(33.69deg) skewX(33.69deg) scaleY(0.83);
 }
 
 .figma-modal-bg-plane--floor {
-    left: -62vw;
-    top: 57%;
-    width: 230vw;
-    height: 172vh;
+    left: 50%;
+    top: 58%;
+    width: 300vw;
+    height: 300vh;
+    background-position: left top;
+    transform-origin: top left;
     transform: rotate(33.69deg) skewX(-22.42deg) scaleY(0.92);
 }
 
 .figma-modal-pieces {
     left: 50%;
-    top: 52%;
+    top: 42%;
     width: min(82vw, 1068px);
     height: min(68vh, 680px);
     transform: translate(-50%, -50%);

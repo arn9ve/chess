@@ -158,3 +158,40 @@ if (openMenuCtrl) {
 if (closeMenuCtrl) {
     closeMenuCtrl.addEventListener('click', closeMenu);
 }
+
+// Parallax effect for the 3D menu
+const figmaMenuSurface = document.querySelector('.figma-menu-surface');
+const figmaModalBg = document.querySelector('.figma-modal-bg');
+const figmaPieces = document.querySelector('.figma-modal-pieces');
+
+if (figmaMenuSurface && figmaModalBg && figmaPieces) {
+    // Slightly scale up the background to avoid seeing edges when moving
+    gsap.set(figmaModalBg, { scale: 1.05 });
+    
+    // Explicitly set xPercent and yPercent for pieces to preserve centering
+    gsap.set(figmaPieces, { xPercent: -50, yPercent: -50 });
+
+    figmaMenuSurface.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        // Normalize mouse coordinates from -1 to 1
+        const xPos = (clientX / window.innerWidth - 0.5) * 2;
+        const yPos = (clientY / window.innerHeight - 0.5) * 2;
+
+        // Move background slightly opposite to mouse (feels further away)
+        gsap.to(figmaModalBg, {
+            duration: 0.6,
+            ease: 'power2.out',
+            x: xPos * -15,
+            y: yPos * -15
+        });
+
+        // Move pieces slightly with the mouse (feels closer)
+        gsap.to(figmaPieces, {
+            duration: 0.6,
+            ease: 'power2.out',
+            x: xPos * 25,
+            y: yPos * 25
+        });
+    });
+}
+
